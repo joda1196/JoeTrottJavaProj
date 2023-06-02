@@ -8,7 +8,7 @@ public class Account {
     private String username;
     private String email;
     private String password;
-    private HashMap<String, Order> ordersDefault;
+    private HashMap<String, Order> orders;
     public Account() {
         System.out.println("Create Account");
         this.userId = generateId();
@@ -22,15 +22,19 @@ public class Account {
         System.out.println("Password: ");
         this.password = scanner.nextLine();
 
-        this.ordersDefault = new HashMap<>();
+        this.orders = new HashMap<>();
     }
 
     public String getAccount() {
-        return this.userId + " " + this.username;
+        return this.username + "|" + this.email + "|" + this.password;
     }
 
     private String generateId() {
         UUID uniqueKey = UUID.randomUUID();
         return uniqueKey.toString();
+    }
+
+    public HashMap<String, Order> viewRecentOrders() {
+        return this.orders;
     }
 }
