@@ -1,21 +1,59 @@
-import java.util.LinkedHashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
 
 
-    public static void addToCart(LinkedHashMap<String, Product> temporaryCart, Product[] productList, String productName, int productQuantity) {
+    public static void addToCart(LinkedHashMap<String, Product> temporaryCart, ArrayList<Product> productList, String productName, int productQuantity) {
 //        if product quantity not zero do below else product = null
 
 //        get product
-        for (int i = 0; i < productList.length; i++) {
-            if (productList[i].productName.equalsIgnoreCase(productName)) {
-                //        add to order
-                temporaryCart.put(productList[i].productName, productList[i]);
+        boolean foundProduct = false;
+
+        for (Product product : productList) {
+            if (product.productName.equalsIgnoreCase(productName)) {
+                product.quantity = productQuantity;
+                temporaryCart.put(product.productName, product);
+                foundProduct = true;
+//                break;
             }
         }
-//        return temporaryCart;
+
+        if (!foundProduct) {
+            System.out.println("Product Not Found");
+        }
+    }
+
+    public static void viewCart(LinkedHashMap<String, Product> temporaryCart) {
+        if (temporaryCart.isEmpty()) {
+            System.out.println("Cart is Empty");
+        } else {
+            for (Product each: temporaryCart.values()) {
+                System.out.println(each.productName);
+                System.out.println(each.price);
+                System.out.println("Quantity: " + each.quantity);
+            }
+        }
+    }
+
+    public static void checkout(Account acc, LinkedHashMap<String, Product> temporaryCart) {
+        if (!temporaryCart.isEmpty()){
+            Order order = new Order(acc.userId);
+//        copy temporary cart to order cart
+            order.cartOfProducts = temporaryCart;
+//        calculate prices and quantities of cartOfProducts
+            order.calculateCost();
+//        print totalCost
+
+            System.out.println("Total: " + order.totalCost);
+//        add order to Account.orders
+            acc.addRecentOrder(acc, order);
+//        clear temp cart
+            temporaryCart.clear();
+        } else {
+            System.out.println("Cart is Empty");
+        }
+
     }
 
     public static void main(String[] args) {
@@ -26,46 +64,52 @@ public class Main {
         Product prod2 = new Product("Hand Sanitizer", 5.49);
         Product prod3 = new Product("Plastic Bin", 8.99);
 
-        Product[] productsList = {prod1, prod2, prod3};
+        ArrayList<Product> productsList = new ArrayList<>(Arrays.asList(prod1, prod2, prod3));
 
         LinkedHashMap<String, Product> temporaryCart = new LinkedHashMap<>();
 
 
         boolean running = true;
+        boolean allowMessage = true;
         String command = "";
 
         while (running) {
-            System.out.println("[p]roducts], [a]dd to cart, view [c]art [r]ecent orders] [v]iew account]");
+
+            if (allowMessage) {
+                allowMessage = false;
+                System.out.println("[p]roducts], [a]dd to cart, view [c]art, [ch]eckout, [r]ecent orders] [v]iew account]");
+            } else {
+                allowMessage = true;
+            }
+
             command = scanner.nextLine().toLowerCase();
-            switch (command) {
-                case "p" -> {
+
+            if (!command.equals("")) {
+                switch (command) {
+                    case "p" -> {
 //                    Show list of Products
-                    System.out.println(prod1.getProduct());
-                    System.out.println(prod2.getProduct());
-                    System.out.println(prod3.getProduct());
-                }
-                case "a" -> {
-//                    validation if order not null ad to hasmap, else set order.
-
-                    System.out.println("Enter Product Name: ");
-                    String productSearch = scanner.nextLine();
-
-                    System.out.println("Quantity: ");
-                    int productQuantity = scanner.nextInt();
-
-                    addToCart(temporaryCart, productsList, productSearch, productQuantity);
-                }
-                case "c" -> {
-                    for (Product each: temporaryCart.values()) {
-                        System.out.println(each.getProduct());
+                        for (Product product: productsList) {
+                            product.getProduct();
+                        }
                     }
+                    case "a" -> {
+                        System.out.println("Enter Product Name: ");
+                        String productSearch = scanner.nextLine().toLowerCase();
+
+                        System.out.println("Quantity: ");
+                        int productQuantity = scanner.nextInt();
+
+                        addToCart(temporaryCart, productsList, productSearch, productQuantity);
+                    }
+                    case "c" -> {viewCart(temporaryCart);}
+                    case "ch" -> {checkout(acc, temporaryCart);}
+                    case "r" -> {acc.viewRecentOrders();}
+                    case "v" -> {System.out.println(acc.getAccount());}
+                    case "q" -> {running = false;}
+                    default -> {System.out.println("Invalid Input");}
                 }
-                case "r" -> {System.out.println(acc.viewRecentOrders());}
-                case "v" -> {System.out.println(acc.getAccount());}
-                case "q" -> {break;}
             }
         }
-
-        System.out.println(acc.getAccount());
+        scanner.close();
     }
 }

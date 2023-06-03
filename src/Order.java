@@ -20,9 +20,8 @@ public class Order {
     }
 
     public double calculateCost () {
-        double totalCost = 0;
-        for (int i = 0; i < this.cartOfProducts.size(); i++) {
-            totalCost += this.cartOfProducts.get(i).price;
+        for (Product each: cartOfProducts.values()) {
+            this.totalCost += each.price;
         }
         return totalCost;
     }

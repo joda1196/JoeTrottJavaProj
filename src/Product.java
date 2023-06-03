@@ -12,8 +12,10 @@ public class Product {
         this.quantity = 0;
     }
 
-    public String getProduct() {
-        return this.productName;
+    public void getProduct() {
+        System.out.println("-----------------------");
+        System.out.println(this.productName);
+        System.out.println(this.price);
     }
 
     private String generateId() {
