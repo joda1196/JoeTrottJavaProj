@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class Account {
     Scanner scanner = new Scanner(System.in);
-    private String userId;
+    public String userId;
     private String username;
     private String email;
     private String password;

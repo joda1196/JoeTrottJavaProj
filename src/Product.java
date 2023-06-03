@@ -4,10 +4,12 @@ public class Product {
     String productId;
     String productName;
     double price;
+    int quantity;
     public Product(String productName, double price) {
         this.productId = generateId();
         this.productName = productName;
         this.price = price;
+        this.quantity = 0;
     }
 
     public String getProduct() {

@@ -1,15 +1,16 @@
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class Order {
     String orderId;
-    Account userId;
-    HashMap<String, Product> cartOfProducts;
+    String userId;
+    LinkedHashMap<String, Product> cartOfProducts;
     double totalCost;
-    public Order(Account userId) {
+    public Order(String userId) {
         this.orderId = generateId();
         this.userId = userId;
-        this.cartOfProducts = new HashMap<String, Product>();
+        this.cartOfProducts = new LinkedHashMap<>();
         this.totalCost = calculateCost();
     }
 
