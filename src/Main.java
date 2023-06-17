@@ -19,9 +19,6 @@ public class Main {
                 System.out.println("Invalid input: Create or Login");
             }
         }
-
-
-
     }
 
 
@@ -78,11 +75,13 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        DBManager db = new DBManager();
         Account acc = new Account();
 
         createOrLogin(acc);
 
-        ArrayList<Product> productsList = new ArrayList<>(Arrays.asList());
+        ArrayList<Product> productsList = new ArrayList<>();
+//        Arrays.asList()
 
         LinkedHashMap<String, Product> temporaryCart = new LinkedHashMap<>();
 
@@ -106,9 +105,20 @@ public class Main {
 //-----------------------------------------------------------------------------------------------------------------
                 switch (command) {
                     case "p" -> {
-//                    Show list of Products
-                        for (Product product: productsList) {
-                            product.getProduct();
+                        String[] commands = {"a", "asc", "desc"};
+                        String userInput = "";
+
+
+                        while (!Arrays.asList(commands).contains(userInput)) {
+                            System.out.println("Show [a]ll | Sort by price [asc] | [desc]");
+
+                            userInput = scanner.nextLine().toLowerCase();
+                            switch (userInput) {
+                                case "a" -> db.getProducts();
+                                case "asc" -> db.sortProductsPriceAsc();
+                                case "desc" -> db.sortProductsPriceDesc();
+                                default -> System.out.println("Invalid Input");
+                            }
                         }
                     }
                     case "a" -> {
@@ -123,7 +133,7 @@ public class Main {
                     case "c" -> {viewCart(temporaryCart);}
                     case "ch" -> {checkout(acc, temporaryCart);}
                     case "r" -> {acc.viewRecentOrders();}
-                    case "v" -> {System.out.println(acc.getAccount());}
+                    case "v" -> {acc.getAccount();}
                     case "q" -> {running = false;}
                     default -> {System.out.println("Invalid Input");}
                 }

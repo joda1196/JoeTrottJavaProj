@@ -30,7 +30,7 @@ public class DBManager {
     public HashMap<String, String> findAccount(String username, String pw) {
         HashMap<String, String> result = null;
 
-        String sqlStatement = "SELECT username, email, password FROM Accounts WHERE username = ? AND password = ?;";
+        String sqlStatement = "SELECT account_username, account_email, account_pw FROM Accounts WHERE account_username = ? AND account_pw = ?;";
 
         try (Connection connection = DriverManager.getConnection(url)) {
             PreparedStatement st = connection.prepareStatement(sqlStatement);
@@ -39,9 +39,9 @@ public class DBManager {
             ResultSet rs = st.executeQuery();
 
             if (rs.next()) {
-                String foundUsername = rs.getString("username");
-                String email = rs.getString("email");
-                String password = rs.getString("password");
+                String email = rs.getString("account_email");
+                String foundUsername = rs.getString("account_username");
+                String password = rs.getString("account_pw");
 
                 result = new HashMap<String, String>();
                 result.put("foundUsername", foundUsername);
@@ -55,9 +55,46 @@ public class DBManager {
     }
 
 
-    public void getProducts(){
+    public void getProducts() {
         try (Connection connection = DriverManager.getConnection(url)) {
             PreparedStatement st = connection.prepareStatement("SELECT * FROM Products;");
+            ResultSet rs = st.executeQuery();
+            int prodCount = 0;
+
+            while (rs.next()) {
+                prodCount++;
+                System.out.println(prodCount++ + " || Product name: " + rs.getString("product_name") + " || " + "Price: " + rs.getBigDecimal("product_price") + " || ");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sortProductsPriceAsc() {
+        try (Connection connection = DriverManager.getConnection(url)) {
+            PreparedStatement st = connection.prepareStatement("SELECT * FROM Products ORDER BY product_price ASC;");
+            ResultSet rs = st.executeQuery();
+            int prodCount = 0;
+
+            while (rs.next()) {
+                prodCount++;
+                System.out.println(prodCount++ + " || Product name: " + rs.getString("product_name") + " || " + "Price: " + rs.getBigDecimal("product_price") + " || ");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sortProductsPriceDesc() {
+        try (Connection connection = DriverManager.getConnection(url)) {
+            PreparedStatement st = connection.prepareStatement("SELECT * FROM Products ORDER BY product_price DESC;");
+            ResultSet rs = st.executeQuery();
+            int prodCount = 0;
+
+            while (rs.next()) {
+                prodCount++;
+                System.out.println(prodCount++ + " || Product name: " + rs.getString("product_name") + " || " + "Price: " + rs.getBigDecimal("product_price") + " || ");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

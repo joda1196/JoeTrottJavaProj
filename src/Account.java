@@ -1,4 +1,3 @@
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.UUID;
@@ -28,22 +27,27 @@ public class Account {
     }
 
     public void loginAccount(){
-        System.out.println("username: ");
-        String usernameInput = scanner.nextLine();
+        boolean running = true;
+        while (running) {
+            System.out.println("username: ");
+            String usernameInput = scanner.nextLine();
 
-        System.out.println("password: ");
-        String pwInput = scanner.nextLine();
+            System.out.println("password: ");
+            String pwInput = scanner.nextLine();
 
-        HashMap<String, String> acc = dbManager.findAccount(usernameInput, pwInput);
-        if (acc != null) {
-            String foundUsername = acc.get("foundUsername");
-            String email = acc.get("email");
-            String password = acc.get("password");
+            HashMap<String, String> acc = dbManager.findAccount(usernameInput, pwInput);
+            if (acc != null) {
+                String foundUsername = acc.get("foundUsername");
+                String email = acc.get("email");
+                String password = acc.get("password");
 
-            assignAccount(foundUsername, email, password);
-        } else {
-            System.out.println("Account Not Found");
+                assignAccount(foundUsername, email, password);
+                running = false;
+            } else {
+                System.out.println("Account Not Found");
+            }
         }
+
 
 
 
@@ -70,8 +74,8 @@ public class Account {
         }
     }
 
-    public String getAccount() {
-        return this.username + "|" + this.email + "|" + this.password;
+    public void getAccount() {
+        System.out.println("Username: " + this.username + "Email: " + this.email + "Password: " + this.password);
     }
 
     private String generateId() {
