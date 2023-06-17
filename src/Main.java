@@ -1,7 +1,28 @@
 import java.util.*;
+import java.sql.*;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
+
+    public static void createOrLogin(Account acc) {
+        boolean running = true;
+        while (running) {
+            System.out.println("[l]ogin or [c]reate an account: ");
+            String choice = scanner.nextLine();
+            if (choice.equals("l")) {
+                acc.loginAccount();
+                running = false;
+            } else if (choice.equals("c")) {
+                acc.createAccount();
+                running = false;
+            } else {
+                System.out.println("Invalid input: Create or Login");
+            }
+        }
+
+
+
+    }
 
 
     public static void addToCart(LinkedHashMap<String, Product> temporaryCart, ArrayList<Product> productList, String productName, int productQuantity) {
@@ -59,16 +80,13 @@ public class Main {
     public static void main(String[] args) {
         Account acc = new Account();
 
-//        Mock Products
-        Product prod1 = new Product("Dove Soap", 6.00);
-        Product prod2 = new Product("Hand Sanitizer", 5.49);
-        Product prod3 = new Product("Plastic Bin", 8.99);
+        createOrLogin(acc);
 
-        ArrayList<Product> productsList = new ArrayList<>(Arrays.asList(prod1, prod2, prod3));
+        ArrayList<Product> productsList = new ArrayList<>(Arrays.asList());
 
         LinkedHashMap<String, Product> temporaryCart = new LinkedHashMap<>();
 
-
+        //DO NOT TOUCH
         boolean running = true;
         boolean allowMessage = true;
         String command = "";
@@ -85,6 +103,7 @@ public class Main {
             command = scanner.nextLine().toLowerCase();
 
             if (!command.equals("")) {
+//-----------------------------------------------------------------------------------------------------------------
                 switch (command) {
                     case "p" -> {
 //                    Show list of Products

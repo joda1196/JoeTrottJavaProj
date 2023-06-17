@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.util.UUID;
 
 public class Account {
+    DBManager dbManager = new DBManager();
     Scanner scanner = new Scanner(System.in);
     public String userId;
     private String username;
@@ -11,25 +12,62 @@ public class Account {
     private String password;
     private HashMap<String, Order> orders;
     public Account() {
-//        System.out.println("Create Account");
-//        this.userId = generateId();
-//
-//        System.out.println("Username: ");
-//        this.username = scanner.nextLine();
-//
-//        System.out.println("Email: ");
-//        this.email = scanner.nextLine();
-//
-//        System.out.println("Password: ");
-//        this.password = scanner.nextLine();
-//
-//        this.orders = new HashMap<>();
+        this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.orders = orders;
+    }
 
+    public void assignAccount(String username, String email, String password) {
         this.userId = generateId();
-        this.username = "username";
-        this.email = "email@yahoo.com";
-        this.password = "password";
+        this.username = username;
+        this.email = email;
+        this.password = password;
         this.orders = new HashMap<>();
+    }
+
+    public void loginAccount(){
+        System.out.println("username: ");
+        String usernameInput = scanner.nextLine();
+
+        System.out.println("password: ");
+        String pwInput = scanner.nextLine();
+
+        HashMap<String, String> acc = dbManager.findAccount(usernameInput, pwInput);
+        if (acc != null) {
+            String foundUsername = acc.get("foundUsername");
+            String email = acc.get("email");
+            String password = acc.get("password");
+
+            assignAccount(foundUsername, email, password);
+        } else {
+            System.out.println("Account Not Found");
+        }
+
+
+
+    }
+    public void createAccount(){
+        System.out.println("Create Account");
+
+        System.out.println("Email: ");
+        String emailInput = scanner.nextLine();
+
+        System.out.println("Username: ");
+        String usernameInput = scanner.nextLine();
+
+        System.out.println("Password: ");
+        String pwInput = scanner.nextLine();
+
+        HashMap<String, String> acc = dbManager.findAccount(usernameInput, pwInput);
+
+        if (acc != null) {
+            System.out.println("Username already exists");
+        } else {
+            assignAccount(usernameInput, emailInput, pwInput);
+            dbManager.addAccount(this.email, this.username, this.password);
+        }
     }
 
     public String getAccount() {
