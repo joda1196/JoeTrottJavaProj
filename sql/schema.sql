@@ -17,7 +17,7 @@ CREATE TABLE Products (
 
 CREATE TABLE Orders (
     order_id BIGSERIAL PRIMARY KEY,
-    order_date_created DATE,
+    order_date_created SET DEFAULT CURRENT_DATE,
     order_total_cost DECIMAL(10,2),
     order_account_id INT,
     FOREIGN KEY (order_account_id) REFERENCES Accounts(account_id) ON DELETE CASCADE

@@ -6,24 +6,22 @@ public class Account {
     DBManager dbManager = new DBManager();
     Scanner scanner = new Scanner(System.in);
     public String userId;
-    private String username;
-    private String email;
-    private String password;
-    private HashMap<String, Order> orders;
+    public String username;
+    public String email;
+    public String password;
+
     public Account() {
         this.userId = userId;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.orders = orders;
     }
 
-    public void assignAccount(String username, String email, String password) {
-        this.userId = generateId();
+    public void assignAccount(String id, String username, String email, String password) {
+        this.userId = id;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.orders = new HashMap<>();
     }
 
     public void loginAccount(){
@@ -37,11 +35,12 @@ public class Account {
 
             HashMap<String, String> acc = dbManager.findAccount(usernameInput, pwInput);
             if (acc != null) {
-                String foundUsername = acc.get("foundUsername");
+                String id = acc.get("id");
+                String foundUsername = acc.get("username");
                 String email = acc.get("email");
                 String password = acc.get("password");
 
-                assignAccount(foundUsername, email, password);
+                assignAccount(id, foundUsername, email, password);
                 running = false;
             } else {
                 System.out.println("Account Not Found");
@@ -69,8 +68,10 @@ public class Account {
         if (acc != null) {
             System.out.println("Username already exists");
         } else {
-            assignAccount(usernameInput, emailInput, pwInput);
-            dbManager.addAccount(this.email, this.username, this.password);
+            dbManager.addAccount(emailInput, usernameInput, pwInput);
+            HashMap<String, String> addedAcc = dbManager.findAccount(usernameInput, pwInput);
+
+            assignAccount(addedAcc.get("id"), addedAcc.get("username"), addedAcc.get("email"), addedAcc.get("password"));
         }
     }
 
@@ -78,18 +79,7 @@ public class Account {
         System.out.println("Username: " + this.username + "Email: " + this.email + "Password: " + this.password);
     }
 
-    private String generateId() {
-        UUID uniqueKey = UUID.randomUUID();
-        return uniqueKey.toString();
-    }
-
-    public void addRecentOrder(Account acc, Order order) {
-        this.orders.put(order.orderId, order);
-    }
-
     public void viewRecentOrders() {
-        if (this.orders.isEmpty()) {
-            System.out.println("Orders: Empty");
-        } else {System.out.println(this.orders.values());}
+        dbManager.findOrders(Integer.parseInt(this.userId));
     }
 }
