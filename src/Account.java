@@ -80,6 +80,6 @@ public class Account {
     }
 
     public void viewRecentOrders() {
-        dbManager.findOrders(Integer.parseInt(this.userId));
+        dbManager.getOrders(Integer.parseInt(this.userId));
     }
 }

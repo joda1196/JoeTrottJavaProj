@@ -3,20 +3,15 @@ import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class Order {
-    String orderId;
+    int orderId;
     String userId;
     LinkedHashMap<String, Product> cartOfProducts;
     double totalCost;
-    public Order(String userId) {
-        this.orderId = generateId();
+    public Order(int id, String userId) {
+        this.orderId = id;
         this.userId = userId;
         this.cartOfProducts = new LinkedHashMap<>();
         this.totalCost = calculateCost();
-    }
-
-    private String generateId() {
-        UUID uniqueKey = UUID.randomUUID();
-        return uniqueKey.toString();
     }
 
     public double calculateCost () {

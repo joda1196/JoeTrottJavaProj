@@ -31,7 +31,7 @@ public class DBManager {
     public HashMap<String, String> findAccount(String username, String pw) {
         HashMap<String, String> result = null;
 
-        String sqlStatement = "SELECT account_username, account_email, account_pw FROM Accounts WHERE account_username = ? AND account_pw = ?;";
+        String sqlStatement = "SELECT account_id, account_username, account_email, account_pw FROM Accounts WHERE account_username = ? AND account_pw = ?;";
 
         try (Connection connection = DriverManager.getConnection(url)) {
             PreparedStatement st = connection.prepareStatement(sqlStatement);
@@ -40,7 +40,7 @@ public class DBManager {
             ResultSet rs = st.executeQuery();
 
             if (rs.next()) {
-                int id = rs.getInt("account_id");
+                String id = rs.getString("account_id");
                 String email = rs.getString("account_email");
                 String foundUsername = rs.getString("account_username");
                 String password = rs.getString("account_pw");
@@ -62,7 +62,7 @@ public class DBManager {
     }
 
 
-    public void getProducts() {
+    public void getAllProducts() {
         try (Connection connection = DriverManager.getConnection(url)) {
             PreparedStatement st = connection.prepareStatement("SELECT * FROM Products;");
             ResultSet rs = st.executeQuery();
@@ -81,22 +81,26 @@ public class DBManager {
         }
     }
 
-    public LinkedHashMap<String, Double> findProduct(String productName) {
-        LinkedHashMap<String, Double> pulledProduct = null;
+    public LinkedHashMap<String, Product> findProduct(String productNameSearch, int quantity) {
+        LinkedHashMap<String, Product> pulledProduct = null;
 
         try (Connection connection = DriverManager.getConnection(url)) {
 
-            PreparedStatement st = connection.prepareStatement("SELECT product_name, product_price FROM Products WHERE product_name = ?;");
-            st.setString(1, productName);
+            PreparedStatement st = connection.prepareStatement("SELECT product_id, product_name, product_price FROM Products WHERE product_name = ? LIMIT 1;");
+            st.setString(1, productNameSearch);
             ResultSet rs = st.executeQuery();
 
-            pulledProduct = new LinkedHashMap<String, Double>();
+            pulledProduct = new LinkedHashMap<String, Product>();
 
             if (rs.next()) {
                 System.out.println("Product Found!");
-                String product_name = rs.getString(1);
-                Double product_price = rs.getDouble(2);
-                pulledProduct.put(product_name, product_price);
+                int id = rs.getInt("product_id");
+                String productName = rs.getString("product_name");
+                Double productPrice = rs.getDouble("product_price");
+
+                Product p = new Product(id, productName, productPrice, quantity);
+
+                pulledProduct.put(productName, p);
             } else {
                 System.out.println("Product Not Found");
             }
@@ -172,34 +176,84 @@ public class DBManager {
         }
     }
 
-    public void findOrders(int userId){
-        String sqlStatement = "SELECT Orders.order_id, Orders.order_date_created, Orders.order_total_cost, Products.product_name, Products.product_price, OrderItems.order_item_quantity\n" +
+    public int findMostRecentOrder(){
+        String sqlStatement = "SELECT *\n" +
+                "FROM Orders\n" +
+                "ORDER BY order_id DESC\n" +
+                "LIMIT 1;\n";
+
+        int orderId = 0;
+
+        try (Connection connection = DriverManager.getConnection(url)) {
+
+            PreparedStatement st = connection.prepareStatement(sqlStatement);
+
+            ResultSet rs = st.executeQuery();
+
+            if (rs.next()) {
+                orderId = rs.getInt("order_id");
+
+            } else {
+                System.out.println("ERROR: Recently made order not found");
+            }
+
+            st.close();
+            rs.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orderId;
+    }
+
+    public void addOrderItems(int productId, int orderId, int orderQuantity) {
+        String sqlStatement = "INSERT INTO OrderItems (order_items_product_id, order_items_order_id, order_items_quantity) VALUES (?, ?, ?);";
+        try (Connection connection = DriverManager.getConnection(url)) {
+
+            PreparedStatement st = connection.prepareStatement(sqlStatement);
+
+            st.setInt(1, productId);
+            st.setInt(2, orderId);
+            st.setInt(3, orderQuantity);
+
+            int exec_st = st.executeUpdate();
+
+            if (exec_st == 1) {
+                System.out.println("Order Items Added Successfully!");
+            } else {
+                System.out.println("ERROR: Order Items unable to be added");
+            }
+            st.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getOrders(int userId){
+        String sqlStatement = "SELECT Orders.order_id, Orders.order_date_created, Orders.order_total_cost, Products.product_name, Products.product_price, OrderItems.order_items_quantity\n" +
                 "FROM OrderItems\n" +
-                "INNER JOIN Orders  ON Orders.orders_id = OrderItems.order_items_orders_id\n" +
+                "INNER JOIN Orders  ON Orders.order_id = OrderItems.order_items_order_id\n" +
                 "INNER JOIN Products ON Products.product_id = OrderItems.order_items_product_id\n" +
                 "WHERE Orders.order_account_id = ?\n" +
                 "ORDER BY order_date_created DESC;";
 
         try (Connection connection = DriverManager.getConnection(url)) {
+
             PreparedStatement st = connection.prepareStatement(sqlStatement);
+
             st.setInt(1, userId);
+
             ResultSet rs = st.executeQuery();
 
             if (rs.next()) {
-                String order_id = rs.getString("order_id");
-                String order_date_created = rs.getString("order_date_created");
-                String order_total_cost = rs.getString("order_total_cost");
-                String product_name = rs.getString("product_name");
-                String product_price = rs.getString("product_price");
-                String order_item_quantity = rs.getString("order_item_quantity");
-
                 System.out.println("-------------------------------------------------------");
-                System.out.println(order_id);
-                System.out.println(order_date_created);
-                System.out.println(order_total_cost);
-                System.out.println(product_name);
-                System.out.println(product_price);
-                System.out.println(order_item_quantity);
+                System.out.println("Order ID: " + rs.getString("order_id"));
+                System.out.println("Order DATE: " + rs.getString("order_date_created"));
+                System.out.println("Order Total: " + rs.getString("order_total_cost"));
+                System.out.println("Order Product: " + rs.getString("product_name"));
+                System.out.println("Product Price: " + rs.getString("product_price"));
+                System.out.println("Product Quantity: " + rs.getString("order_items_quantity"));
             } else {
                 System.out.println("No Orders Found");
             }
