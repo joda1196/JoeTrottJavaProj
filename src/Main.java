@@ -21,9 +21,7 @@ public class Main {
         }
     }
 
-
     public static void addToCart(LinkedHashMap<String, Product> temporaryCart, String productName, Product product) {
-//        Product product = new Product(productId, productName, productPrice, productQuantity);
         temporaryCart.put(productName, product);
         System.out.println("Product Added To Cart!");
         viewCart(temporaryCart);
@@ -51,13 +49,14 @@ public class Main {
     public static double calculateCost (LinkedHashMap<String, Product> temporaryCart) {
         double totalCost = 0;
         for (Product each: temporaryCart.values()) {
-            totalCost += each.price;
+            totalCost += each.price * each.quantity;
         }
         return totalCost;
     }
 
     public static void checkout(Account acc, LinkedHashMap<String, Product> temporaryCart) {
         if (!temporaryCart.isEmpty()){
+
             double orderTotalCost = calculateCost(temporaryCart);
             db.addOrder(orderTotalCost, Integer.parseInt(acc.userId));
 
@@ -69,6 +68,7 @@ public class Main {
 
             System.out.println("Total: " + orderTotalCost);
             temporaryCart.clear();
+
         } else {
             System.out.println("Cart is Empty");
         }
@@ -119,7 +119,6 @@ public class Main {
                     }
                     case "a" -> {
                         System.out.println("Enter Product Name: ");
-
                         String productSearch = scanner.nextLine().toLowerCase();
 
                         System.out.println("Quantity: ");
@@ -135,6 +134,7 @@ public class Main {
                     case "rem" -> {
                         System.out.println("Enter Product Name: ");
                         String productSearch = scanner.nextLine().toLowerCase();
+
                         if (temporaryCart.containsKey(productSearch)) {
                             removeFromCart(temporaryCart, productSearch);
                         } else {

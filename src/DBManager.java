@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -231,9 +232,15 @@ public class DBManager {
     }
 
     public void getOrders(int userId){
-        String sqlStatement = "SELECT Orders.order_id, Orders.order_date_created, Orders.order_total_cost, Products.product_name, Products.product_price, OrderItems.order_items_quantity\n" +
+
+//        get orders where order_id = userId
+//        get orderitems where order_items_order_id = order_id
+//        get products where product_id = order_items_product_id
+
+//        SELECT Orders.order_id, Orders.order_date_created, Products.product_name, Products.product_id, OrderItems.order_item
+        String sqlStatement = "SELECT Orders.order_id, Orders.order_date_created, Orders.order_total_cost, Products.product_name, Products.product_price, OrderItems.order_items_order_id, OrderItems.order_items_quantity\n" +
                 "FROM OrderItems\n" +
-                "INNER JOIN Orders  ON Orders.order_id = OrderItems.order_items_order_id\n" +
+                "INNER JOIN Orders ON Orders.order_id = OrderItems.order_items_order_id\n" +
                 "INNER JOIN Products ON Products.product_id = OrderItems.order_items_product_id\n" +
                 "WHERE Orders.order_account_id = ?\n" +
                 "ORDER BY order_date_created DESC;";
@@ -246,16 +253,22 @@ public class DBManager {
 
             ResultSet rs = st.executeQuery();
 
-            if (rs.next()) {
-                System.out.println("-------------------------------------------------------");
-                System.out.println("Order ID: " + rs.getString("order_id"));
-                System.out.println("Order DATE: " + rs.getString("order_date_created"));
-                System.out.println("Order Total: " + rs.getString("order_total_cost"));
-                System.out.println("Order Product: " + rs.getString("product_name"));
-                System.out.println("Product Price: " + rs.getString("product_price"));
-                System.out.println("Product Quantity: " + rs.getString("order_items_quantity"));
-            } else {
+            if (!rs.next()) {
                 System.out.println("No Orders Found");
+            } else {
+                do {
+                    System.out.println("----------------------------ORDER---------------------------");
+                    System.out.println("Order ID: " + rs.getString("order_id"));
+                    System.out.println("Order DATE: " + rs.getString("order_date_created"));
+                    System.out.println("Order Total: " + rs.getString("order_total_cost"));
+                    if (rs.getString("order_items_order_id").equals(rs.getString("order_id"))) {
+                        System.out.println("----------------------------PRODUCT---------------------------");
+                        System.out.println("Order Product: " + rs.getString("product_name"));
+                        System.out.println("Product Price: " + rs.getString("product_price"));
+                        System.out.println("Product Quantity: " + rs.getString("order_items_quantity"));
+                    }
+
+                } while (rs.next());
             }
 
             st.close();
