@@ -4,6 +4,8 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
     static DBManager db = new DBManager();
 
+    static Helper mrHelper = new Helper();
+
     public static void createOrLogin(Account acc) {
         boolean running = true;
         while (running) {
@@ -123,6 +125,7 @@ public class Main {
 
                         System.out.println("Quantity: ");
                         int productQuantity = scanner.nextInt();
+//                        mrHelper.IntegerValidator(productQuantity);
 
                         LinkedHashMap<String, Product> foundProduct = db.findProduct(productSearch, productQuantity);
 
