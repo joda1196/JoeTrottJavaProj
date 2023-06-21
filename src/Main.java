@@ -25,16 +25,18 @@ public class Main {
 
     public static void addToCart(LinkedHashMap<String, Product> temporaryCart, String productName, Product product) {
         temporaryCart.put(productName.toLowerCase(), product);
-        System.out.println("Product Added To Cart!");
-        viewCart(temporaryCart);
+        System.out.println(productName + " Added To Cart");
     }
 
-    public static void removeFromCart(LinkedHashMap<String, Product> temporaryCart, String productName) {
-        temporaryCart.remove(productName);
-        System.out.println("Product Removed To Cart!");
-        viewCart(temporaryCart);
+    public static void removeFromCart(LinkedHashMap<String, Product> cart, String productName) {
+        for (Iterator<Product> iterator = cart.values().iterator(); iterator.hasNext();) {
+            Product product = iterator.next();
+            if (productName.equals(product.productName)) {
+                iterator.remove();
+                System.out.println(product.productName + " Removed From Cart");
+            }
+        }
     }
-
 
     public static void viewCart(LinkedHashMap<String, Product> temporaryCart) {
         if (temporaryCart.isEmpty()) {
@@ -127,12 +129,12 @@ public class Main {
                         int productQuantity = mrHelper.validNumber("Quantity: ");
 
                         LinkedHashMap<String, Product> foundProduct = db.findProduct(productSearch, productQuantity);
+
                         if (foundProduct.isEmpty()) {
                             break;
                         }
-
-                        String productName = foundProduct.keySet().toString();
                         Product product = foundProduct.get(productSearch);
+                        String productName = product.productName;
 
                         addToCart(temporaryCart, productName, product);
                     }
@@ -142,38 +144,7 @@ public class Main {
                         } else {
                             System.out.println("Enter Product Name: ");
                             String productNameRemove = scanner.nextLine().toLowerCase();
-
-                            System.out.println(productNameRemove);
-
-                            for (Product i : temporaryCart.values()) {
-                                if (productNameRemove.equals(i.productName)) {
-                                    temporaryCart.remove(productNameRemove);
-                                    System.out.println(i.productName);
-
-//                                    System.out.println("found it");
-//                                    removeFromCart(temporaryCart, productNameRemove);
-                                }
-                            }
-
-
-
-//                            System.out.println(productNameRemove);
-//                            System.out.println(temporaryCart.keySet());
-//                            System.out.println(temporaryCart);
-
-
-//                            for (String each : temporaryCart.keySet()) {
-//                                if (productNameRemove.equalsIgnoreCase(each)) {
-//                                    removeFromCart(temporaryCart, productNameRemove);
-//                                }
-//
-//                            }
-
-//                            if (temporaryCart.containsKey(productNameRemove)) {
-//                                removeFromCart(temporaryCart, productNameRemove);
-//                            } else {
-//                                System.out.println("Not Found in Cart");
-//                            }
+                            removeFromCart(temporaryCart, productNameRemove);
                         }
 
                     }
