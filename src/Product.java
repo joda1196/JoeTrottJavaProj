@@ -17,4 +17,14 @@ public class Product {
         System.out.println(this.productName);
         System.out.println(this.price);
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "productId=" + productId +
+                ", productName='" + productName + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

@@ -5,6 +5,7 @@ import java.util.UUID;
 public class Account {
     DBManager dbManager = new DBManager();
     Scanner scanner = new Scanner(System.in);
+    Helper mrHelper = new Helper();
     public String userId;
     public String username;
     public String email;
@@ -52,16 +53,17 @@ public class Account {
 
     }
     public void createAccount(){
+
         System.out.println("Create Account");
 
-        System.out.println("Email: ");
-        String emailInput = scanner.nextLine();
+//        System.out.println("Email: ");
+        String emailInput = mrHelper.validString("Email: ");
 
-        System.out.println("Username: ");
-        String usernameInput = scanner.nextLine();
+//        System.out.println("Username: ");
+        String usernameInput = mrHelper.validString("Username: ");
 
-        System.out.println("Password: ");
-        String pwInput = scanner.nextLine();
+//        System.out.println("Password: ");
+        String pwInput = mrHelper.validString("Password: ");
 
         HashMap<String, String> acc = dbManager.findAccount(usernameInput, pwInput);
 
@@ -76,7 +78,9 @@ public class Account {
     }
 
     public void getAccount() {
-        System.out.println("Username: " + this.username + "Email: " + this.email + "Password: " + this.password);
+        System.out.println("Username: " + this.username);
+        System.out.println("Email: " + this.email);
+        System.out.println("Password: " + this.password);
     }
 
     public void viewRecentOrders() {

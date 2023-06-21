@@ -24,7 +24,7 @@ public class Main {
     }
 
     public static void addToCart(LinkedHashMap<String, Product> temporaryCart, String productName, Product product) {
-        temporaryCart.put(productName, product);
+        temporaryCart.put(productName.toLowerCase(), product);
         System.out.println("Product Added To Cart!");
         viewCart(temporaryCart);
     }
@@ -93,10 +93,10 @@ public class Main {
 
             if (allowMessage) {
                 allowMessage = false;
-                System.out.println("[p]roducts], [a]dd to cart, [rem]ove from cart, view [c]art, [ch]eckout, [r]ecent orders] [v]iew account]");
+                System.out.println("[p]roducts], [a]dd to cart, [rem]ove from cart, view [c]art, [ch]eckout, [r]ecent orders] [v]iew account] [q]uit");
             } else {
                 allowMessage = true;
-                System.out.println("[p]roducts], [a]dd to cart, [rem]ove from cart, view [c]art, [ch]eckout, [r]ecent orders] [v]iew account]");
+                System.out.println("[p]roducts], [a]dd to cart, [rem]ove from cart, view [c]art, [ch]eckout, [r]ecent orders] [v]iew account] [q]uit");
             }
 
             command = scanner.nextLine().toLowerCase();
@@ -105,16 +105,17 @@ public class Main {
 //---------------------------------------------MAIN COMMANDS--------------------------------------------------------------------
                 switch (command) {
                     case "p" -> {
-                        String[] commands = {"a", "asc", "desc"};
+                        String[] commands = {"a", "asc", "desc", "back"};
                         String userInput = "";
 
                         while (!Arrays.asList(commands).contains(userInput)) {
-                            System.out.println("Show [a]ll | Sort by price [asc] | [desc]");
+                            System.out.println("Show [a]ll | Sort by price [asc] | [desc] | [back]");
                             userInput = scanner.nextLine().toLowerCase();
                             switch (userInput) {
                                 case "a" -> db.getAllProducts();
                                 case "asc" -> db.sortProductsPriceAsc();
                                 case "desc" -> db.sortProductsPriceDesc();
+                                case "back" -> {break;}
                                 default -> System.out.println("Invalid Input");
                             }
                         }
@@ -123,11 +124,12 @@ public class Main {
                         System.out.println("Enter Product Name: ");
                         String productSearch = scanner.nextLine().toLowerCase();
 
-                        System.out.println("Quantity: ");
-                        int productQuantity = scanner.nextInt();
-//                        mrHelper.IntegerValidator(productQuantity);
+                        int productQuantity = mrHelper.validNumber("Quantity: ");
 
                         LinkedHashMap<String, Product> foundProduct = db.findProduct(productSearch, productQuantity);
+                        if (foundProduct.isEmpty()) {
+                            break;
+                        }
 
                         String productName = foundProduct.keySet().toString();
                         Product product = foundProduct.get(productSearch);
@@ -135,14 +137,45 @@ public class Main {
                         addToCart(temporaryCart, productName, product);
                     }
                     case "rem" -> {
-                        System.out.println("Enter Product Name: ");
-                        String productSearch = scanner.nextLine().toLowerCase();
-
-                        if (temporaryCart.containsKey(productSearch)) {
-                            removeFromCart(temporaryCart, productSearch);
+                        if (temporaryCart.isEmpty()) {
+                            System.out.println("Cart is Empty");
                         } else {
-                            System.out.println("Not Found in Cart");
+                            System.out.println("Enter Product Name: ");
+                            String productNameRemove = scanner.nextLine().toLowerCase();
+
+                            System.out.println(productNameRemove);
+
+                            for (Product i : temporaryCart.values()) {
+                                if (productNameRemove.equals(i.productName)) {
+                                    temporaryCart.remove(productNameRemove);
+                                    System.out.println(i.productName);
+
+//                                    System.out.println("found it");
+//                                    removeFromCart(temporaryCart, productNameRemove);
+                                }
+                            }
+
+
+
+//                            System.out.println(productNameRemove);
+//                            System.out.println(temporaryCart.keySet());
+//                            System.out.println(temporaryCart);
+
+
+//                            for (String each : temporaryCart.keySet()) {
+//                                if (productNameRemove.equalsIgnoreCase(each)) {
+//                                    removeFromCart(temporaryCart, productNameRemove);
+//                                }
+//
+//                            }
+
+//                            if (temporaryCart.containsKey(productNameRemove)) {
+//                                removeFromCart(temporaryCart, productNameRemove);
+//                            } else {
+//                                System.out.println("Not Found in Cart");
+//                            }
                         }
+
                     }
                     case "c" -> {viewCart(temporaryCart);}
                     case "ch" -> {checkout(acc, temporaryCart);}

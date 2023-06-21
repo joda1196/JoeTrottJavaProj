@@ -256,7 +256,7 @@ public class DBManager {
                 do {
                     if (tempOrderId != rs.getInt("order_id")) {
                         tempOrderId = rs.getInt("order_id");
-                        System.out.println("----------------------------ORDER---------------------------");
+                        System.out.println("=========================ORDER==========================");
                         System.out.println("Order ID: " + rs.getString("order_id"));
                         System.out.println("Order DATE: " + rs.getString("order_date_created"));
                         System.out.println("Order Total: " + rs.getString("order_total_cost"));
