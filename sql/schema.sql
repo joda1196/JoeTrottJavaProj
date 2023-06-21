@@ -13,6 +13,7 @@ CREATE TABLE Products (
     product_id BIGSERIAL PRIMARY KEY,
     product_name VARCHAR(25) NOT NULL,
     product_price DECIMAL(10,2)
+    CONSTRAINT uc_product UNIQUE (product_name);
 );
 
 CREATE TABLE Orders (
